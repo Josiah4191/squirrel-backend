@@ -91,7 +91,7 @@ hash_string() {
 
 verbose() { :; }
 [ "${MVNW_VERBOSE-}" != true ] || verbose() { printf %s\\n "${1-}"; }
-
+warning: in the working copy of 'mvnw.cmd', LF will be replaced by CRLF the next time Git touches it
 die() {
   printf %s\\n "$1" >&2
   exit 1
