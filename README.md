@@ -12,8 +12,6 @@ A basic Spring Boot + PostgreSQL backend for experimenting with a realistic setu
 - Global CORS configuration
 - Docker setup (app + db)
 
----
-
 ## Tools
 
 - Java
@@ -23,14 +21,10 @@ A basic Spring Boot + PostgreSQL backend for experimenting with a realistic setu
 - Swagger
 - Docker
 
----
-
 ## Notes
 
 - Back-end only
 - Built for education and practice
-
----
 
 ## Run with Docker
 
@@ -40,8 +34,6 @@ A basic Spring Boot + PostgreSQL backend for experimenting with a realistic setu
    - API: `http://localhost:8080`
    - Database: `localhost:5432`
    - Swagger: `http://localhost:8080/swagger-ui/index.html#/`
-
----
 
 ## API Summary
 
@@ -79,5 +71,3 @@ A basic Spring Boot + PostgreSQL backend for experimenting with a realistic setu
 | DELETE | /items/{item_id} | Delete an item by id                      |
 | GET    | /items           | Get all items                             |
 | POST   | /items           | Create a new item                         |
-
----
