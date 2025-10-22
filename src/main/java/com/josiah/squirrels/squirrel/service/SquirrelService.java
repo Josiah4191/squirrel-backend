@@ -1,78 +1,83 @@
 package com.josiah.squirrels.squirrel.service;
 
 import com.josiah.squirrels.common.exception.NotFoundException;
+import com.josiah.squirrels.item.dto.ItemResponseDto;
+import com.josiah.squirrels.squirrel.dto.SquirrelCreateDto;
 import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
+import com.josiah.squirrels.squirrel.dto.SquirrelUpdateDto;
 import com.josiah.squirrels.squirrel.entity.Squirrel;
 import com.josiah.squirrels.squirrel.repository.SquirrelRepository;
+import com.josiah.squirrels.stash.dto.ItemsInStashDto;
+import com.josiah.squirrels.stashline.entity.StashLine;
+import com.josiah.squirrels.stashline.service.StashLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class SquirrelService {
 
-    private SquirrelRepository squirrelRepository;
+    private final SquirrelRepository squirrelRepo;
     private static final Logger logger = LoggerFactory.getLogger(SquirrelService.class);
+    private final StashLineService stashLineService;
 
     @Autowired
-    public SquirrelService(SquirrelRepository squirrelRepository) {
-        this.squirrelRepository = squirrelRepository;
+    public SquirrelService(SquirrelRepository squirrelRepo, StashLineService stashLineService) {
+        this.squirrelRepo = squirrelRepo;
+        this.stashLineService = stashLineService;
     }
 
+    // Get all squirrels
     public Page<SquirrelResponseDto> getSquirrels(Pageable pageable) {
-        Page<Squirrel> squirrels = squirrelRepository.findAll(pageable);
-        Page<SquirrelResponseDto> squirrelResponseDtos = squirrels
+        Page<Squirrel> squirrels = squirrelRepo.findAll(pageable);
+
+        return squirrels
                 .map(s -> new SquirrelResponseDto(s.getId(), s.getName()));
-
-        return squirrelResponseDtos;
     }
 
-    public Optional<Squirrel> createSquirrel(String name) {
+    // Create a new squirrel
+    public SquirrelResponseDto createSquirrel(SquirrelCreateDto createDto) {
         Squirrel squirrel = new Squirrel();
-        squirrel.setName(name);
-        try {
-            Squirrel savedSquirrel = squirrelRepository.save(squirrel);
-            logger.info("Creating new squirrel with name: {}", savedSquirrel.getName());
-            logger.debug("Saved squirrel: {} with ID {}", savedSquirrel.getName(), savedSquirrel.getId());
-            return Optional.of(savedSquirrel);
-        } catch (DataIntegrityViolationException e) {
-            logger.error("Creating new squirrel failed: {}", e.getMessage());
-            return Optional.empty();
-        }
+        squirrel.setName(createDto.getName());
+        Squirrel savedSquirrel = squirrelRepo.save(squirrel);
+        return new SquirrelResponseDto(savedSquirrel.getId(), savedSquirrel.getName());
     }
 
-    public SquirrelResponseDto getSquirrelById(Long id) {
-
-        Squirrel squirrel = squirrelRepository.findById(id)
+    // Get a single squirrel by id
+    public SquirrelResponseDto getSquirrelById(Long squirrelId) {
+        Squirrel squirrel = squirrelRepo
+                .findById(squirrelId)
                 .orElseThrow(() -> new NotFoundException("Squirrel not found"));
 
         return new SquirrelResponseDto(squirrel.getId(), squirrel.getName());
     }
 
-    public SquirrelResponseDto updateSquirrelName(Long id, String name) {
-        Squirrel squirrel = squirrelRepository
-                .findById(id)
+    // Update a squirrel's name by id
+    public SquirrelResponseDto updateSquirrelName(Long squirrelId, SquirrelUpdateDto updateDto) {
+        Squirrel squirrel = squirrelRepo
+                .findById(squirrelId)
                 .orElseThrow(() -> new NotFoundException("Squirrel not found"));
 
-        squirrel.setName(name);
-        Squirrel savedSquirrel = squirrelRepository.save(squirrel);
+        squirrel.setName(updateDto.getName());
+        Squirrel savedSquirrel = squirrelRepo.save(squirrel);
 
         return new SquirrelResponseDto(savedSquirrel.getId(), savedSquirrel.getName());
     }
 
-    public Optional<Squirrel> deleteSquirrelById(Long id) {
-        Optional<Squirrel> squirrel = squirrelRepository.findById(id);
+    // Delete a squirrel by id
+    public void deleteSquirrel(Long squirrelId) {
+        Squirrel squirrel = squirrelRepo
+                .findById(squirrelId)
+                .orElseThrow(() -> new NotFoundException("Squirrel not found."));
 
-        if (squirrel.isPresent()) {
-            squirrelRepository.deleteById(id);
-            return squirrel;
-        }
-        return Optional.empty();
+        squirrelRepo.delete(squirrel);
+    }
+
+    // Get all items for a squirrel
+    public Page<ItemsInStashDto> getAllItems(Long squirrelId, Pageable pageable) {
+        return stashLineService.getStashLinesBySquirrelId(squirrelId, pageable);
     }
 }

@@ -26,9 +26,20 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        String message = "Data integrity violation occurred.";
+        String message = ex.getMessage();
         int code = HttpStatus.BAD_REQUEST.value();
         String error = HttpStatus.BAD_REQUEST.getReasonPhrase();
+        LocalDateTime timeStamp = LocalDateTime.now();
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(code, error, message, timeStamp);
+
+        return ResponseEntity.status(code).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex) {
+        String message = ex.getMessage();
+        int code = HttpStatus.NOT_FOUND.value();
+        String error = HttpStatus.NOT_FOUND.getReasonPhrase();
         LocalDateTime timeStamp = LocalDateTime.now();
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(code, error, message, timeStamp);
 

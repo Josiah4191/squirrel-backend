@@ -1,74 +1,76 @@
 package com.josiah.squirrels.squirrel.controller;
 
+import com.josiah.squirrels.item.dto.ItemResponseDto;
 import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
-import com.josiah.squirrels.squirrel.entity.Squirrel;
 import com.josiah.squirrels.squirrel.service.SquirrelService;
 import com.josiah.squirrels.squirrel.dto.SquirrelCreateDto;
 import com.josiah.squirrels.squirrel.dto.SquirrelUpdateDto;
+import com.josiah.squirrels.stash.dto.ItemsInStashDto;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.net.URI;
 
 @RestController
 public class SquirrelController {
 
-    private final SquirrelService squirrelService;
+    private final SquirrelService service;
     private final static Logger logger = LoggerFactory.getLogger(SquirrelController.class);
 
-    @Autowired
-    public SquirrelController(SquirrelService squirrelService) {
-        this.squirrelService = squirrelService;
+    public SquirrelController(SquirrelService service) {
+        this.service = service;
     }
 
+    // Get all squirrels
     @GetMapping("/squirrels")
-    public ResponseEntity<Page<SquirrelResponseDto>> getAllSquirrels(Pageable pageable) {
-        Page<SquirrelResponseDto> squirrelResponseDtos = squirrelService.getSquirrels(pageable);
-
-        return ResponseEntity.ok(squirrelResponseDtos);
+    public ResponseEntity<Page<SquirrelResponseDto>> getAllSquirrels(@ParameterObject Pageable pageable) {
+        Page<SquirrelResponseDto> responseDtos = service.getSquirrels(pageable);
+        return ResponseEntity.ok(responseDtos);
     }
 
-    @GetMapping("/squirrels/{id}")
-    public ResponseEntity<SquirrelResponseDto> getSquirrelById(@PathVariable Long id) {
-        SquirrelResponseDto squirrelResponseDto = squirrelService.getSquirrelById(id);
-
-        return ResponseEntity.ok(squirrelResponseDto);
+    // Get a single squirrel by id
+    @GetMapping("/squirrels/{squirrel_id}")
+    public ResponseEntity<SquirrelResponseDto> getSquirrelById(@PathVariable("squirrel_id") Long squirrelId) {
+        SquirrelResponseDto responseDto = service.getSquirrelById(squirrelId);
+        return ResponseEntity.ok(responseDto);
     }
 
+    // Get all items for a squirrel by id
+    @GetMapping("/squirrels/{squirrel_id}/items")
+    public ResponseEntity<Page<ItemsInStashDto>> getAllItems(@PathVariable("squirrel_id") Long squirrelId, @ParameterObject Pageable pageable) {
+        Page<ItemsInStashDto> responseDto = service.getAllItems(squirrelId, pageable);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // Create a new squirrel
     @PostMapping("/squirrels")
-    public ResponseEntity<String> createSquirrel(
-            @Valid
-            @RequestBody SquirrelCreateDto squirrelCreateDto) {
-        String name = squirrelCreateDto.getName();
-        Optional<Squirrel> savedSquirrel = squirrelService.createSquirrel(name);
-
-        return savedSquirrel
-                .map(value -> ResponseEntity.ok(String.format("%s added successfully", value.getName())))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<SquirrelResponseDto> createSquirrel(
+            @Valid @RequestBody SquirrelCreateDto createDto) {
+        SquirrelResponseDto responseDto = service.createSquirrel(createDto);
+        return ResponseEntity
+                .created(URI.create("/squirrels/" + responseDto.getId()))
+                .body(responseDto);
     }
 
-    @PutMapping("/squirrels/{id}")
+    // Update a squirrel's name by id
+    @PutMapping("/squirrels/{squirrel_id}")
     public ResponseEntity<SquirrelResponseDto> updateSquirrelName(
-            @PathVariable Long id,
-            @Valid @RequestBody SquirrelUpdateDto squirrelUpdateDto) {
-        SquirrelResponseDto squirrelResponseDto = squirrelService.updateSquirrelName(id, squirrelUpdateDto.getName());
-
-        return ResponseEntity.ok(squirrelResponseDto);
+            @PathVariable("squirrel_id") Long squirrelId, @Valid @RequestBody SquirrelUpdateDto updateDto) {
+        SquirrelResponseDto responseDto = service.updateSquirrelName(squirrelId, updateDto);
+        return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/squirrels/{id}")
-    public ResponseEntity<String> deleteSquirrelById(@PathVariable Long id) {
-
-        Optional<Squirrel> squirrel = squirrelService.deleteSquirrelById(id);
-
-        return squirrel.map(value -> ResponseEntity.ok(String.format("Squirrel removed with ID: %d", id)))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    // Delete a squirrel by id
+    @DeleteMapping("/squirrels/{squirrel_id}")
+    public ResponseEntity<Void> deleteSquirrelById(@PathVariable("squirrel_id") Long squirrelId) {
+        service.deleteSquirrel(squirrelId);
+        return ResponseEntity.noContent().build();
     }
 
 

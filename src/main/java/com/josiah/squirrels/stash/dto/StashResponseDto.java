@@ -1,7 +1,11 @@
 package com.josiah.squirrels.stash.dto;
 
+import com.josiah.squirrels.item.dto.ItemResponseDto;
 import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
 import com.josiah.squirrels.squirrel.entity.Squirrel;
+import com.josiah.squirrels.stash.entity.Stash;
+
+import java.util.List;
 
 public class StashResponseDto {
 

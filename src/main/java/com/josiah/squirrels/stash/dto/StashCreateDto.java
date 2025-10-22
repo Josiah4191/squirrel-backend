@@ -1,15 +1,16 @@
 package com.josiah.squirrels.stash.dto;
 
-import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class StashCreateDto {
 
+    @NotBlank(message="Location is required")
+    @Size(min=5, max=30, message="Location must be between 5 and 30 characters")
     private String location;
-    private SquirrelResponseDto squirrelResponseDto;
 
-    public StashCreateDto(String location, SquirrelResponseDto squirrelResponseDto) {
+    public StashCreateDto(String location) {
         this.location = location;
-        this.squirrelResponseDto = squirrelResponseDto;
     }
 
     public String getLocation() {
@@ -20,11 +21,4 @@ public class StashCreateDto {
         this.location = location;
     }
 
-    public SquirrelResponseDto getSquirrelResponseDto() {
-        return squirrelResponseDto;
-    }
-
-    public void setSquirrelResponseDto(SquirrelResponseDto squirrelResponseDto) {
-        this.squirrelResponseDto = squirrelResponseDto;
-    }
 }
