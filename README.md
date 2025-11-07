@@ -2,8 +2,6 @@
 
 A basic Spring Boot + PostgreSQL backend for experimenting with a realistic setup, Flyway migrations, Docker, and database management.
 
----
-
 ## Overview
 
 - CRUD operations for squirrels, items, stashes, and stash lines
