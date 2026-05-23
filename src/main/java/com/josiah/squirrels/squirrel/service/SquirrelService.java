@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,7 +34,8 @@ public class SquirrelService {
 
     // Get all squirrels
     public Page<SquirrelResponseDto> getSquirrels(Pageable pageable) {
-        Page<Squirrel> squirrels = squirrelRepo.findAll(pageable);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
+        Page<Squirrel> squirrels = squirrelRepo.findAll(sortedPageable);
 
         return squirrels
                 .map(s -> new SquirrelResponseDto(s.getId(), s.getName()));

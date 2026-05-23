@@ -1,6 +1,5 @@
 package com.josiah.squirrels.squirrel.controller;
 
-import com.josiah.squirrels.item.dto.ItemResponseDto;
 import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
 import com.josiah.squirrels.squirrel.service.SquirrelService;
 import com.josiah.squirrels.squirrel.dto.SquirrelCreateDto;

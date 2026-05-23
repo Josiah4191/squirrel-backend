@@ -1,14 +1,18 @@
 package com.josiah.squirrels.stash.dto;
 
+import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
+
 public class ItemsInStashDto {
 
     private Long id;
+    private Long stashLineId;
     private String name;
     private String description;
     private int quantity;
 
-    public ItemsInStashDto(Long id, String name, String description, int quantity) {
+    public ItemsInStashDto(Long id, Long stashLineId, String name, String description, int quantity) {
         this.id = id;
+        this.stashLineId = stashLineId;
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -20,6 +24,14 @@ public class ItemsInStashDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getStashLineId() {
+        return stashLineId;
+    }
+
+    public void setStashLineId(Long stashLineId) {
+        this.stashLineId = stashLineId;
     }
 
     public String getName() {
@@ -45,4 +57,5 @@ public class ItemsInStashDto {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
 }

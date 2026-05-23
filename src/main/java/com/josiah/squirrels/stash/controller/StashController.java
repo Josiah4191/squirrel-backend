@@ -3,6 +3,7 @@ package com.josiah.squirrels.stash.controller;
 import com.josiah.squirrels.stash.dto.*;
 import com.josiah.squirrels.stash.service.StashService;
 import com.josiah.squirrels.stashline.dto.StashLineResponseDto;
+import com.josiah.squirrels.stashline.dto.StashLineUpdateDto;
 import com.josiah.squirrels.stashline.service.StashLineService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -68,8 +69,8 @@ public class StashController {
 
     // Get all items in a stash by id
     @GetMapping("/stashes/{stash_id}/items")
-    public ResponseEntity<Page<ItemsInStashDto>> getItems(@PathVariable("stash_id") Long stashId, @ParameterObject Pageable pageable) {
-        Page<ItemsInStashDto> responseDto = service.getAllItems(stashId, pageable);
+    public ResponseEntity<StashItemsPageDto> getItems(@PathVariable("stash_id") Long stashId, @ParameterObject Pageable pageable) {
+        StashItemsPageDto responseDto = service.getStashItemsPage(stashId, pageable);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -82,6 +83,18 @@ public class StashController {
                 .body(responseDto);
     }
 
+    // Remove item from stash by item id
+    @DeleteMapping("/stash_lines/{stashLine_id}")
+    public ResponseEntity<Void> removeItemFromStash(@PathVariable("stashLine_id") Long stashLineId) {
+        stashLineService.deleteStashLine(stashLineId);
+        return ResponseEntity.noContent().build();
+    }
 
+    @PatchMapping("/stash_lines/{stashLine_id}")
+    public ResponseEntity<StashLineResponseDto> updateQuantity(@PathVariable("stashLine_id") Long stashLineId, @Valid @RequestBody StashLineUpdateDto updateDto) {
+        updateDto.setId(stashLineId);
+        StashLineResponseDto responseDto = stashLineService.updateStashLine(updateDto);
+        return ResponseEntity.ok(responseDto);
+    }
 
 }

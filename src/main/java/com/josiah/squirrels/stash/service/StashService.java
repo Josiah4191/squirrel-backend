@@ -5,6 +5,7 @@ import com.josiah.squirrels.item.repository.ItemRepository;
 import com.josiah.squirrels.squirrel.dto.SquirrelResponseDto;
 import com.josiah.squirrels.squirrel.entity.Squirrel;
 import com.josiah.squirrels.squirrel.repository.SquirrelRepository;
+import com.josiah.squirrels.squirrel.service.SquirrelService;
 import com.josiah.squirrels.stash.dto.*;
 import com.josiah.squirrels.stash.entity.Stash;
 import com.josiah.squirrels.stash.repository.StashRepository;
@@ -12,7 +13,9 @@ import com.josiah.squirrels.stashline.dto.StashLineAddDto;
 import com.josiah.squirrels.stashline.dto.StashLineResponseDto;
 import com.josiah.squirrels.stashline.service.StashLineService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,17 +24,20 @@ public class StashService {
     private final SquirrelRepository squirrelRepo;
     private final ItemRepository itemRepo;
     private final StashLineService stashLineService;
+    private final SquirrelService squirrelService;
 
-    public StashService(StashRepository stashRepo, SquirrelRepository squirrelRepo, ItemRepository itemRepo, StashLineService stashLineService) {
+    public StashService(StashRepository stashRepo, SquirrelRepository squirrelRepo, ItemRepository itemRepo, StashLineService stashLineService, SquirrelService squirrelService) {
         this.stashRepo = stashRepo;
         this.squirrelRepo = squirrelRepo;
         this.itemRepo = itemRepo;
         this.stashLineService = stashLineService;
+        this.squirrelService = squirrelService;
     }
 
     // Get all stashes from a squirrel by squirrel id
     public Page<StashResponseDto> getStashes(Long squirrelId, Pageable pageable) {
-        Page<Stash> stash = stashRepo.findBySquirrelId(squirrelId, pageable);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
+        Page<Stash> stash = stashRepo.findBySquirrelId(squirrelId, sortedPageable);
         return stash
                 .map(s -> new StashResponseDto(
                         s.getId(),
@@ -99,6 +105,12 @@ public class StashService {
     // Get all items in a stash
     public Page<ItemsInStashDto> getAllItems(Long stashId, Pageable pageable) {
         return stashLineService.getStashLinesByStashId(stashId, pageable);
+    }
+
+    public StashItemsPageDto getStashItemsPage(Long stashId, Pageable pageable) {
+        Page<ItemsInStashDto> itemsInStash = getAllItems(stashId, pageable);
+        StashResponseDto stash = getStashById(stashId);
+        return new StashItemsPageDto(stash, itemsInStash);
     }
 
     // Add an item to a stash

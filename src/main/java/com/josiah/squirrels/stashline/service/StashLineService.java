@@ -15,7 +15,9 @@ import com.josiah.squirrels.stashline.repository.StashLineRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,9 +60,11 @@ public class StashLineService {
 
     // get all stash lines with a given stash_id
     public Page<ItemsInStashDto> getStashLinesByStashId(Long stashId, Pageable pageable) {
-        return stashLineRepo.findByStashId(stashId, pageable)
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
+        return stashLineRepo.findByStashId(stashId, sortedPageable)
                 .map(s -> new ItemsInStashDto(
                         s.getItem().getId(),
+                        s.getId(),
                         s.getItem().getName(),
                         s.getItem().getDescription(),
                         s.getQuantity()));
@@ -70,6 +74,7 @@ public class StashLineService {
         return stashLineRepo.findByStash_SquirrelId(squirrelId, pageable)
                 .map(s -> new ItemsInStashDto(
                         s.getItem().getId(),
+                        s.getId(),
                         s.getItem().getName(),
                         s.getItem().getDescription(),
                         s.getQuantity()));
@@ -95,7 +100,7 @@ public class StashLineService {
                 savedStashLine.getQuantity());
     }
 
-    // delete stash line- return void
+    // delete stash line - return void
     public void deleteStashLine(Long stashLineId) {
         // Get the stash line by id
         StashLine stashLine = stashLineRepo.findById(stashLineId)
