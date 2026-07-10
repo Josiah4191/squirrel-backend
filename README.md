@@ -1,6 +1,6 @@
 # Squirrel Java Backend
 
-This project was built while I was learning Java, Spring Boot, and REST API development.
+Built to explore Java, Spring Boot, and REST API development.
 
 ## Overview
 
