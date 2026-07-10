@@ -1,50 +1,25 @@
-# Squirrel Stash API (Archived)
-
-> **Status:** Archived
+# Squirrel Java Backend
 
 This project was built while I was learning Java, Spring Boot, and REST API development.
 
-It has since been retired and is preserved as an archive of an earlier learning project. It is no longer maintained.
+## Overview
 
-## About
+Squirrel Stash API is a Spring Boot backend application that provides REST endpoints for managing squirrels, items, and stash data. The project demonstrates backend architecture, CRUD operations, and relational database integration.
 
-Squirrel Stash API is the backend service for the Squirrel Stash application.
-
-It provides REST endpoints for managing squirrels, items, and stash data while serving as a practical introduction to backend application development with Spring Boot.
-
-## What I Learned
-
-The goal of this project was to gain experience with:
-
-- Java
-- Spring Boot
-- Spring MVC
-- REST APIs
-- Spring Data JPA
-- Hibernate
-- MySQL
-- Layered architecture
+## Features
+- REST API endpoints
 - CRUD operations
-- Dependency Injection
-
-## Project Status
-
-This repository is archived.
-
-It served its purpose as a learning project, but it no longer reflects my current development practices or architecture. Rather than continue updating it, I decided to preserve it as part of my development history.
-
-Screenshots of the complete application are available on my portfolio website.
+- Relational database integration
 
 ## Technologies
 
 - Java
 - Spring Boot
-- Spring MVC
 - Spring Data JPA
 - Hibernate
-- MySQL
+- PostgreSQL
 - Maven
 
-## License
+## Project Status
 
-This project is provided for educational and portfolio purposes.
+This project is archived and no longer maintained. It remains available as a reference.
